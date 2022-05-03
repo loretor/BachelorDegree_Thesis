@@ -39,7 +39,7 @@ class pila:
 mutex = RLock()
 q = pila()
 
-
+#classe Thread 
 class Player(Thread):
     def __init__(self, sound):
         Thread.__init__(self)
