@@ -124,10 +124,10 @@ def activity_DHT22():
     valore = random.randint(0,22)
     M_temperatura_aria = update_M(lista_valori_dht22_temperatura, M_temperatura_aria, valore)
     M_umidita_aria = update_M(lista_valori_dht22_umidita, M_umidita_aria, valore)
-    printqueue(list(lista_valori_dht22_umidita.queue))
+    print(list(lista_valori_dht22_umidita.queue))
     print("M: "+str(M_temperatura_aria))
     print("--------------------")
-    printqueue(list(lista_valori_dht22_temperatura.queue))
+    print(list(lista_valori_dht22_temperatura.queue))
     print("M: "+str(M_umidita_aria))
     print("--------------------")
 
@@ -139,7 +139,7 @@ def activity_Capacitive():
     print('CAPACITIVE')
     valore = random.randint(0,100)
     M_umidita_suolo = update_M(lista_valori_capacitive, M_umidita_suolo, valore)
-    printqueue(list(lista_valori_capacitive.queue))
+    print(list(lista_valori_capacitive.queue))
     print("M: "+str(M_umidita_suolo))
     print("--------------------")
 
