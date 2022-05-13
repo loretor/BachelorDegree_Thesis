@@ -2188,7 +2188,7 @@
 										"$ref": "AAAAAAGACTvQVrB1YQo="
 									},
 									"edgePosition": 1,
-									"text": " [media > valoreUmiditaSuolo]"
+									"text": " [media < valoreUmiditaSuolo]"
 								},
 								{
 									"_type": "EdgeLabelView",
@@ -2284,7 +2284,7 @@
 										"$ref": "AAAAAAGACTwtlrCI1T4="
 									},
 									"edgePosition": 1,
-									"text": " [media <= valoreUmiditaSuolo]"
+									"text": " [media >= valoreUmiditaSuolo]"
 								},
 								{
 									"_type": "EdgeLabelView",
@@ -5220,7 +5220,7 @@
 							"target": {
 								"$ref": "AAAAAAGACTppa6+7H+k="
 							},
-							"guard": "media > valoreUmiditaSuolo"
+							"guard": "media < valoreUmiditaSuolo"
 						},
 						{
 							"_type": "UMLTransition",
@@ -5234,7 +5234,7 @@
 							"target": {
 								"$ref": "AAAAAAGACTix267vfsg="
 							},
-							"guard": "media <= valoreUmiditaSuolo"
+							"guard": "media >= valoreUmiditaSuolo"
 						},
 						{
 							"_type": "UMLTransition",
