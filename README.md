@@ -71,7 +71,7 @@ I thread hanno associato una funzione che rappresenta il loro task da svolgere. 
 - se si entra in uno dei if (quindi verrebbe teoricamente acceso un attuatore) si eliminano tutti i valori all'interno della propria queue.
 
 Riportiamo ad esempio la funzione del DTH22, per il capacitive è simile, la si trova nel codice come def activity_Capacitive():
-```pyhton
+```python
 ## funzione attività del sensore DTH22, per misura umidità aria e temperatura
 def activity_DHT22():
     global M_temperatura_aria
