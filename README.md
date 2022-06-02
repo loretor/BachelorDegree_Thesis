@@ -119,7 +119,92 @@ def activity_DHT22():
     print("--------------------")
 ```
 
+Per ultimo trattiamo lo scheduling dei thread.
+In particolare il funzionamento del nostro sistema si basa su due thread che devono alternarsi nella lettura dei valori del sensore, di modo tale da non rischiare che solo uno dei due sensori venga letto mentre l'altro no.
+Per fare ciò abbiamo quindi creato un mutex che i due thread condividono e che devono necessariamente possedere per poter leggere un valore del sensore a cui sono associati. Una volta letto il valore rilasciano il mutex.
+Per fare sì però che la lettura sia sempre alternata e che quindi la lettura dei due sensori avvenga a pari passo abbiamo deciso di introdurre un controllo mediante una pila.
+Questa serve per poter simulare la fila di attesa dei thread, andando a svolgere l'attività solamente del thread che si trova nella testa della pila; una volta eseguita il thread viene poi buttato fuori dalla pila, facendo scalare di posizione quelli dietro.
+```
+#classe custom per gestire la queue dei thread che richiedono un lock condiviso
+class pila:
+    #la pila ha due campi
+    #lista di thread che è un array chiamato Elementi
+    #l'ultimo elemento che è stato buttato fuori dalla lista che all'inizio è 1 a caso
+    def __init__(self):
+        self.Elementi = []
+        self.lastpop = 1
 
+    #la push inserisce in fondo alla lista l'elemento
+    def push(self, element):
+        self.Elementi.append(element)
 
-L'idea è infatti quella di alternare la lettura prima di un sensore (thread1) e poi quella del secondo sensore (thread2), di modo tale che poi sempre nel momento in cui ogni thread possiede il lock possa eventualmente azionare degli attuatori qualora sulla base della propria lettura sia necessario intervenire sulla serra (esempio: DHT22 legge una nuova temperatura, calcola la media delle ultime temperature lette e osserva che la temperatura media è troppo alta per la serra, per cui chiude il circuito della scheda relais e attiva la ventola per poter permettere un recircolo d'aria; una volta terminato rilascia il lock per permettere al Capacitive di proseguire con la sua lettura).
+    #la pop aggiorna il nuovo ultimo elemento che viene buttato fuori e poi lo toglie
+    def pop(self):
+        self.lastpop = self.head()
+        return self.Elementi.pop(0)
 
+    #head permette di vedere chi si trova in cima alla lista
+    def head(self):
+        return self.Elementi[0]
+
+    #stampa gli elementi della lista
+    def print(self):
+        for el in self.Elementi:
+            print(el)
+
+    #serve per vedere quante istanze di un element sono contenute all'interno della lista
+    def search(self, element):
+        return self.Elementi.count(element)
+
+    #ritorna la lunghezza della lista
+    def length(self):
+        return len(self.Elementi)
+```
+
+Simuliamo il funzionamento del sistema con un thread t1 e t2.
+t1 prende il lock, vede che la pila è vuota per cui entra nella fila di attesa. Successivamente si controlla se la testa della pila coincide con lui, se sì allora si esegue l'attività del thread, se no si lascia il lock e si attende, in quanto ci sono altri thread prima di lui.
+Se però t1 è più veloce di t2, il rischio è che si possa eseguire due volte di fila t1 cosa che non vogliamo. Allora la pila tiene conto dell'ultimo thread che ha buttato fuori dalla sua testa, di modo tale che se dovesse essere ancora vuota e si dovesse ripresentare lo stesso thread, questo viene rifiutato, per non permettere che venga eseguito due volte. t1 potrà entrare quindi di nuovo nella lista di attesa solamente se t2 verrà eseguito, permettendo quindi un continuo ciclo di alternaramento tra i due.
+```
+#variabili globali
+mutex = RLock()
+q = pila()
+
+#classe Thread paralleli
+class Thread_paralleli(Thread):
+    def __init__(self, activity, identificativo):
+        Thread.__init__(self)
+        self.activity = activity
+        self.identificativo = identificativo
+
+    def run(self):
+        global mutex
+        global q
+
+        while True:
+            mutex.acquire()
+
+            #se siamo nella situazione di lista vuota dobbiamo inserire il thread nella lista di attesa
+            if(q.length() == 0):
+                #se però il thread è già stato servito per ultimo secondo la lista, allora non lo metteremo in attesa perchè vogliamo evitare di servirlo due volte di fila
+                #se infatti il t1 è più veloce di t2 e verifica due volte di fila questa condizione q.length == 0 rischia di fare due volte di fila le sue attività cosa che non vogliamo
+                #quindi questo spiega il perchè serve avere il lastpop, di modo tale che fino a che t1 è l'ulitmo a essere stato poppato non può prendersi il lock
+                if(q.lastpop != self.identificativo):
+                    q.push(self.identificativo)
+
+            #queste attività possono essere fatte solo se la lista ha degli elementi
+            if(q.length() != 0):
+                #se il thread è in testa alla lista allora eseguo le sue attività e lo tolgo dalla lista
+                if(q.head() == self.identificativo):
+                    self.activity()
+                    q.pop()
+                #se invece non è in testa, allora controllo quante istanze di lui ci sono nella lista, se il valore è 0 allora posso metterlo, se è diverso da 0 vuol dire che è 1
+                #e significa che è già nella lista e non devo scriverlo ancora, se no lo ripeto nella lista
+                else:
+                    count = q.search(self.identificativo)
+                    if(count == 0):
+                        q.push(self.identificativo)
+
+            mutex.release()
+            #la dormita è solo per rendere la simulazione più lenta se no non si vede niente
+            time.sleep(2)
+```
