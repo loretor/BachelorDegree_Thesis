@@ -63,9 +63,9 @@ countIrrigazioni = 0
 numeroIrrigazioni = 2
 ```
 
-La gestione dei thread è abbastanza classica, infatti seguendo lo Statechart abbiamo creato due diversi thread con una classe build in di Python con associate l'attività che il thread deve svolgere.
+La gestione dei thread è abbastanza classica, infatti seguendo lo Statechart abbiamo creato due diversi thread con una classe build in di Python con associata l'attività che il thread deve svolgere.
 Spieghiamo prima come sono creati i thread e poi come abbiamo gestito il loro scheduling.
-I thread hanno associato una funzione che rappresenta il loro task da svolgere. La funzione sia nel caso di DHT22 che nel caso del Capacitive Soil Moisture Sensor consiste:
+I thread hanno associata una funzione che rappresenta il loro task da svolgere. La funzione sia nel caso di DHT22 che nel caso del Capacitive Soil Moisture Sensor consiste:
 - porzione di codice dove si setta il collegamento tra raspberry e il sensore per ottenere il dato (è uno dei file .py presenti nella cartella Codici che abbiamo integrato in questa funzione specifica.
 - aggiorna i valori della prorpia queue con il metodo visto in precedenza
 - sulla base dei valori ottenuti fa dei controlli e in caso stampa a video quello che dovrebbe fare (per ora non abbiamo integrato al controller.py tutta la parte di gestione della scheda realais che abbiamo sui codici singoli presenti in Modelli, in quanto abbiamo voluto effettuare delle fasi di testing per controllare che il lavoro dei thread funzioni correttamente).
