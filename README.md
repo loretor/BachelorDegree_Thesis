@@ -40,7 +40,7 @@ def update_M(lista, M, valore):
 ```
 
 Per ultimo nel codice sono presenti le queue per i due sensori e le loro medie. Inoltre sono presenti anche altre variabili necessarie per fare i controlli per eventualmente azionare la scheda relais. Per ora la grandezza di queste pile è di solo 5 perchè nelle nostre fasi di testing era necessario controllare più velocemente il corretto funzionamento del Rapsberry. In futuro la grandezza delle liste sarà molto più grande.
-```
+```python
 Listdimension = 5
 
 #liste per fare una media di un certo numero di valori e non considerare solo il singolo
@@ -71,7 +71,7 @@ I thread hanno associato una funzione che rappresenta il loro task da svolgere. 
 - se si entra in uno dei if (quindi verrebbe teoricamente acceso un attuatore) si eliminano tutti i valori all'interno della propria queue.
 
 Riportiamo ad esempio la funzione del DTH22, per il capacitive è simile, la si trova nel codice come def activity_Capacitive():
-```
+```pyhton
 ## funzione attività del sensore DTH22, per misura umidità aria e temperatura
 def activity_DHT22():
     global M_temperatura_aria
@@ -124,7 +124,7 @@ In particolare il funzionamento del nostro sistema si basa su due thread che dev
 Per fare ciò abbiamo quindi creato un mutex che i due thread condividono e che devono necessariamente possedere per poter leggere un valore del sensore a cui sono associati. Una volta letto il valore rilasciano il mutex.
 Per fare sì però che la lettura sia sempre alternata e che quindi la lettura dei due sensori avvenga a pari passo abbiamo deciso di introdurre un controllo mediante una pila.
 Questa serve per poter simulare la fila di attesa dei thread, andando a svolgere l'attività solamente del thread che si trova nella testa della pila; una volta eseguita il thread viene poi buttato fuori dalla pila, facendo scalare di posizione quelli dietro.
-```
+```python
 #classe custom per gestire la queue dei thread che richiedono un lock condiviso
 class pila:
     #la pila ha due campi
@@ -164,7 +164,7 @@ class pila:
 Simuliamo il funzionamento del sistema con un thread t1 e t2.
 t1 prende il lock, vede che la pila è vuota per cui entra nella fila di attesa. Successivamente si controlla se la testa della pila coincide con lui, se sì allora si esegue l'attività del thread, se no si lascia il lock e si attende, in quanto ci sono altri thread prima di lui.
 Se però t1 è più veloce di t2, il rischio è che si possa eseguire due volte di fila t1 cosa che non vogliamo. Allora la pila tiene conto dell'ultimo thread che ha buttato fuori dalla sua testa, di modo tale che se dovesse essere ancora vuota e si dovesse ripresentare lo stesso thread, questo viene rifiutato, per non permettere che venga eseguito due volte. t1 potrà entrare quindi di nuovo nella lista di attesa solamente se t2 verrà eseguito, permettendo quindi un continuo ciclo di alternaramento tra i due.
-```
+```python
 #variabili globali
 mutex = RLock()
 q = pila()
