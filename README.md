@@ -19,6 +19,7 @@ Per ora siamo riusciti a implementare tramite codice solamente la parte interna 
 
 Queste due attività sono state implementate con dei thread che condividono un lock per la risorsa condivisa. Ogni attività di lettura dei due sensori si basa su una lista di letture. In particolare ognuno dei due thread ha associato una [queue](https://docs.python.org/3/library/queue.html) di valori, tale per cui ogni volta che il sensore legge un valore lo inserisce nella sua queue. Se la queue è piena si elimina il valore più vecchio che è stato letto dal sensore e si aggiunge il nuovo (politica FIFO). 
 E' stata scelta questa gestione dei valori letti da un sensore per rendere statisticamente più valide le misurazioni. Infatti può accadere (a volte data la scarsa qualità di alcuni sensori) che ci possano essere delle letture errate o che non catturano i veri dati della realtà. Per rendere quindi tali misurazioni il meno impattanti possibili sul controllore, è necessario aumentare il numero di campioni e lavorare sempre sulla media di questi ultimi.
+
 Questa è la porzione di codice del controllore che gestisce l'aggiunta di un nuovo elemento alla lista con l'aggiornamento della media di quest'ultima.
 ```python
 #metodo per aggiornare il valore di una media e la lista degli ultimi valori letti da un sensore
