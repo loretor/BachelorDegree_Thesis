@@ -17,8 +17,8 @@ Il file è ancora abbastanza confuso; in futuro l'idea è quella di suddividere 
 Il flow di controllo del rapsberry è fortemente influenzato dallo StateChart presente nella cartella [Modelli](/Modelli).
 Per ora siamo riusciti a implementare tramite codice solamente la parte interna allo stato "Luce accesa", focalizzandoci sullo scheduling delle due diverse attività di lettura del sensore DTH22 (per la temperatura e umidità dell'aria) e del sensore Capacitive Soil Moisture (per la temperatura del suolo).
 
-Queste due attività sono state implementate con dei thread che condividono un lock per la risorsa condivisa. Ogni attività di lettura dei due sensori si basa su una lista di letture. In particolare ognuno dei due thread ha associato una [queue](https://docs.python.org/3/library/queue.html) di valori, tale per cui ogni volta che il sensore legge un valore lo inserisce nella sua queue. Se la queue è piena si elimina il valore più vecchio che è stato letto dal sensore e si aggiunge il nuovo (politica FIFO). 
-E' stata scelta questa gestione dei valori letti da un sensore per rendere statisticamente più valide le misurazioni. Infatti può accadere (a volte data la scarsa qualità di alcuni sensori) che ci possano essere delle letture errate o che non si catturino i veri dati della realtà. Per rendere quindi tali misurazioni il meno impattanti possibili sul controllore, è necessario aumentare il numero di campioni e lavorare sempre sulla media di questi ultimi.
+Queste due attività sono state implementate con dei thread che condividono un lock per la risorsa condivisa. Ogni attività di lettura dei due sensori si basa su una lista di misurazioni. In particolare ognuno dei due thread ha associato una [queue](https://docs.python.org/3/library/queue.html) di valori, tale per cui ogni volta che il sensore legge un valore lo inserisce nella sua queue. Se la queue è piena si elimina il valore più vecchio che è stato letto dal sensore e si aggiunge il nuovo (politica FIFO). 
+E' stata scelta questa gestione dei valori letti da un sensore per rendere statisticamente più valide le misurazioni. Infatti può accadere (data la scarsa qualità di alcuni sensori) che ci possano essere delle letture errate o che non si misurino correttamente dei dati. Per rendere quindi tali misurazioni il meno impattanti possibili sul controllore, è necessario aumentare il numero di campioni e lavorare sempre sulla media di questi ultimi.
 
 Questa è la porzione di codice del controllore che gestisce l'aggiunta di un nuovo elemento alla lista con l'aggiornamento della media di quest'ultima.
 ```python
@@ -40,7 +40,7 @@ def update_M(lista, M, valore):
     return media
 ```
 
-Riportiamo il codice dove sono presenti le queue per i due sensori e le loro medie. Inoltre sono presenti anche altre variabili necessarie per i controlli che regolano l'eventuale azionamento della scheda relais. Per ora la grandezza di queste queue è di solo 5 perchè nelle nostre fasi di testing era necessario controllare più velocemente il corretto funzionamento del Rapsberry. In futuro la grandezza delle liste sarà molto più grande.
+Riportiamo il codice dove sono presenti le queue per i due sensori e le loro medie. Inoltre sono presenti anche altre variabili necessarie per i controlli che regolano l'eventuale azionamento della scheda relais. Per ora la grandezza di queste queue è di 5 elementi perchè nelle nostre fasi di testing era necessario controllare più velocemente il corretto funzionamento del Rapsberry. In futuro la grandezza delle liste sarà molto più grande.
 ```python
 Listdimension = 5
 
@@ -63,13 +63,13 @@ countIrrigazioni = 0
 numeroIrrigazioni = 2
 ```
 
-La gestione dei thread è abbastanza classica, infatti seguendo lo Statechart abbiamo creato due diversi thread con una classe build in di Python con associata l'attività che il thread deve svolgere.
+La gestione dei thread è abbastanza classica, infatti seguendo lo Statechart abbiamo creato due diversi thread con una classe build di Python con associata l'attività che il thread deve svolgere.
 Spieghiamo prima come sono creati i thread e poi come abbiamo gestito il loro scheduling.
 I thread hanno associata una funzione che rappresenta il loro task da svolgere. La funzione sia nel caso di DHT22 che nel caso del Capacitive Soil Moisture Sensor consiste:
 - porzione di codice dove si setta il collegamento tra raspberry e il sensore per ottenere il dato (è uno dei file .py presenti nella cartella Codici che abbiamo integrato in questa funzione specifica.
 - aggiorna i valori della prorpia queue con il metodo visto in precedenza
-- sulla base dei valori ottenuti fa dei controlli e in caso stampa a video quello che dovrebbe fare (per ora non abbiamo integrato al controller.py tutta la parte di gestione della scheda realais che abbiamo sui codici singoli presenti in Modelli, in quanto abbiamo voluto effettuare delle fasi di testing per controllare che il lavoro dei thread funzioni correttamente).
-- se si entra in uno dei if (quindi verrebbe teoricamente acceso un attuatore) si eliminano tutti i valori all'interno della propria queue.
+- sulla base dei valori ottenuti fa dei controlli e in caso stampa a video l'attività che dovrebbe svolgere (per ora non abbiamo integrato al controller.py tutta la parte di gestione della scheda realais che abbiamo sui codici singoli presenti in Modelli, in quanto abbiamo voluto effettuare prima delle fasi di testing per controllare che il lavoro dei thread funzioni correttamente).
+- se si entra in uno degli if (quindi verrebbe teoricamente acceso un attuatore) si eliminano tutti i valori all'interno della propria queue (in questo modo di fatto è come se si facesse un reset delle misurazioni).
 
 Riportiamo ad esempio la funzione del DTH22, per il capacitive è simile, la si trova nel codice come def activity_Capacitive():
 ```python
@@ -122,7 +122,7 @@ def activity_DHT22():
 Per ultimo trattiamo lo scheduling dei thread.
 In particolare il funzionamento del nostro sistema si basa su due thread che devono alternarsi nella lettura dei valori del sensore, di modo tale da non rischiare che solo uno dei due sensori venga letto mentre l'altro no.
 Per fare ciò abbiamo quindi creato un mutex che i due thread condividono e che devono necessariamente possedere per poter leggere un valore del sensore a cui sono associati. Una volta letto il valore rilasciano il mutex.
-Per fare sì però che la lettura sia sempre alternata e che quindi la lettura dei due sensori avvenga a pari passo abbiamo deciso di introdurre un controllo mediante una pila.
+Tuttavia, affinchè la lettura sia sempre alternata e che quindi la lettura dei due sensori avvenga di pari passo, abbiamo deciso di introdurre un controllo mediante una pila.
 Questa serve per poter simulare la fila di attesa dei thread, andando a svolgere l'attività solamente del thread che si trova nella testa della pila; una volta eseguita il thread viene poi buttato fuori dalla pila, facendo scalare di posizione quelli dietro.
 ```python
 #classe custom per gestire la queue dei thread che richiedono un lock condiviso
@@ -163,7 +163,7 @@ class pila:
 
 Simuliamo il funzionamento del sistema con un thread t1 e t2.
 t1 prende il lock, vede che la pila è vuota per cui entra nella fila di attesa. Successivamente si controlla se la testa della pila coincide con lui, se sì allora si esegue l'attività del thread, se no si lascia il lock e si attende, in quanto ci sono altri thread prima di lui.
-Se t1 dovesse essere eseguito e quindi poi espulso dalla lista di attesa, se dovesse essere più veloce di t2, il rischio è che si possa eseguire due volte di fila t1 cosa che non vogliamo. Allora la pila tiene conto dell'ultimo thread che ha buttato fuori dalla sua testa, di modo tale che se dovesse essere ancora vuota e si dovesse ripresentare lo stesso thread, questo viene rifiutato, per non permettere che venga eseguito due volte. t1 potrà entrare quindi di nuovo nella lista di attesa solamente se t2 verrà eseguito, permettendo quindi che i due si possano continuamente alternare.
+Se t1 dovesse essere eseguito e quindi poi espulso dalla lista di attesa, se dovesse essere più veloce di t2, il rischio è che si possa eseguire due volte di fila t1 cosa che non vogliamo. Allora la pila tiene conto dell'ultimo thread che ha buttato fuori dalla sua testa, di modo tale che se dovesse essere ancora vuota e si dovesse ripresentare lo stesso thread, questo viene rifiutato, per non permettere che venga eseguito due volte di fila. t1 potrà entrare quindi di nuovo nella lista di attesa solamente se t2 verrà eseguito, permettendo quindi che i due thread si possano continuamente alternare.
 ```python
 #variabili globali
 mutex = RLock()
