@@ -6,9 +6,9 @@ Creazione di una serra automatica con la scheda Raspberry
 - Lorenzo Torri
 
 # 📂 Organizzazione della repository
-Nella cartella [Modelli](/Modelli) sono presenti le rappresentazioni mediante UML del progetto. Per ora l'unica rappresentazione creata è quella di uno StateChart Diagram.
+Nella cartella [Modelli](/Modelli) sono presenti le rappresentazioni UML del progetto. Per ora l'unica rappresentazione creata è quella di uno StateChart Diagram.
 
-Nella cartella [Codice](/Codice) sono presenti tutti i file .py creati per controllare sensori e attuatori tramite Raspberry. In particolare sono presenti i singoli file python che sono stati usati per controllare singolarmente i sensori e per chiudere ed aprire il circuito che collega rasperry alla scheda relais.
+Nella cartella [Codice](/Codice) sono presenti tutti i file .py creati per controllare sensori e attuatori tramite Raspberry. In particolare sono presenti i file python che sono stati usati per controllare singolarmente i sensori e per chiudere ed aprire il circuito che collega rasperry alla scheda relais.
 
 Il file [controller.py](Codice/controller.py) è la prima versione di codice python che verrà utilizzato per poter controllare raspberry e poter permettere alla scheda di svolgere più attività e controllare lo scheduling di queste ultime.
 
@@ -18,7 +18,7 @@ Il flow di controllo del rapsberry è fortemente influenzato dallo StateChart pr
 Per ora siamo riusciti a implementare tramite codice solamente la parte interna allo stato "Luce accesa", focalizzandoci sullo scheduling delle due diverse attività di lettura del sensore DTH22 (per la temperatura e umidità dell'aria) e del sensore Capacitive Soil Moisture (per la temperatura del suolo).
 
 Queste due attività sono state implementate con dei thread che condividono un lock per la risorsa condivisa. Ogni attività di lettura dei due sensori si basa su una lista di letture. In particolare ognuno dei due thread ha associato una [queue](https://docs.python.org/3/library/queue.html) di valori, tale per cui ogni volta che il sensore legge un valore lo inserisce nella sua queue. Se la queue è piena si elimina il valore più vecchio che è stato letto dal sensore e si aggiunge il nuovo (politica FIFO). 
-E' stata scelta questa gestione dei valori letti da un sensore per rendere statisticamente più valide le misurazioni. Infatti può accadere (a volte data la scarsa qualità di alcuni sensori) che ci possano essere delle letture errate o che non catturano i veri dati della realtà. Per rendere quindi tali misurazioni il meno impattanti possibili sul controllore, è necessario aumentare il numero di campioni e lavorare sempre sulla media di questi ultimi.
+E' stata scelta questa gestione dei valori letti da un sensore per rendere statisticamente più valide le misurazioni. Infatti può accadere (a volte data la scarsa qualità di alcuni sensori) che ci possano essere delle letture errate o che non si catturino i veri dati della realtà. Per rendere quindi tali misurazioni il meno impattanti possibili sul controllore, è necessario aumentare il numero di campioni e lavorare sempre sulla media di questi ultimi.
 
 Questa è la porzione di codice del controllore che gestisce l'aggiunta di un nuovo elemento alla lista con l'aggiornamento della media di quest'ultima.
 ```python
@@ -40,7 +40,7 @@ def update_M(lista, M, valore):
     return media
 ```
 
-Per ultimo nel codice sono presenti le queue per i due sensori e le loro medie. Inoltre sono presenti anche altre variabili necessarie per fare i controlli per eventualmente azionare la scheda relais. Per ora la grandezza di queste pile è di solo 5 perchè nelle nostre fasi di testing era necessario controllare più velocemente il corretto funzionamento del Rapsberry. In futuro la grandezza delle liste sarà molto più grande.
+Riportiamo il codice dove sono presenti le queue per i due sensori e le loro medie. Inoltre sono presenti anche altre variabili necessarie per i controlli che regolano l'eventuale azionamento della scheda relais. Per ora la grandezza di queste queue è di solo 5 perchè nelle nostre fasi di testing era necessario controllare più velocemente il corretto funzionamento del Rapsberry. In futuro la grandezza delle liste sarà molto più grande.
 ```python
 Listdimension = 5
 
@@ -84,7 +84,6 @@ def activity_DHT22():
 
     print('DHT22')
     #aggiorno la lista_valori_dht22_temperatura e la M_temperatura_aria
-#     t = random.randint(0,22)
     M_temperatura_aria = update_M(lista_valori_dht22_temperatura, M_temperatura_aria, t)
     M_umidita_aria = update_M(lista_valori_dht22_umidita, M_umidita_aria, h)
     
@@ -164,7 +163,7 @@ class pila:
 
 Simuliamo il funzionamento del sistema con un thread t1 e t2.
 t1 prende il lock, vede che la pila è vuota per cui entra nella fila di attesa. Successivamente si controlla se la testa della pila coincide con lui, se sì allora si esegue l'attività del thread, se no si lascia il lock e si attende, in quanto ci sono altri thread prima di lui.
-Se però t1 è più veloce di t2, il rischio è che si possa eseguire due volte di fila t1 cosa che non vogliamo. Allora la pila tiene conto dell'ultimo thread che ha buttato fuori dalla sua testa, di modo tale che se dovesse essere ancora vuota e si dovesse ripresentare lo stesso thread, questo viene rifiutato, per non permettere che venga eseguito due volte. t1 potrà entrare quindi di nuovo nella lista di attesa solamente se t2 verrà eseguito, permettendo quindi un continuo ciclo di alternaramento tra i due.
+Se t1 dovesse essere eseguito e quindi poi espulso dalla lista di attesa, se dovesse essere più veloce di t2, il rischio è che si possa eseguire due volte di fila t1 cosa che non vogliamo. Allora la pila tiene conto dell'ultimo thread che ha buttato fuori dalla sua testa, di modo tale che se dovesse essere ancora vuota e si dovesse ripresentare lo stesso thread, questo viene rifiutato, per non permettere che venga eseguito due volte. t1 potrà entrare quindi di nuovo nella lista di attesa solamente se t2 verrà eseguito, permettendo quindi che i due si possano continuamente alternare.
 ```python
 #variabili globali
 mutex = RLock()
