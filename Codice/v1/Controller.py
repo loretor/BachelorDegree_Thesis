@@ -1,15 +1,6 @@
 from threading import Thread, RLock
 import time, queue, random
 
-# librerie per ads e capcitive soil moisture sensor
-import board
-import busio
-import adafruit_ads1x15.ads1015 as ADS
-from adafruit_ads1x15.analog_in import AnalogIn
-
-# libreria per dht
-import Adafruit_DHT as dht
-
 #import dei vari moduli presenti nella stessa cartella di Controller.py
 import Pila as pila
 import UpdateQueue.py as uq
