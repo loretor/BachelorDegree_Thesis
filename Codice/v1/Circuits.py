@@ -1,5 +1,14 @@
 #modulo che contiene tutti i collegamenti da fare per ogni sensore o attuatore collegato alla scheda relais
 
+# librerie per ads e capcitive soil moisture sensor
+import board
+import busio
+import adafruit_ads1x15.ads1015 as ADS
+from adafruit_ads1x15.analog_in import AnalogIn
+
+# libreria per dht
+import Adafruit_DHT as dht
+
 #per lettura valori del sensore DHT22
 def dht22():
     DHT = 21
