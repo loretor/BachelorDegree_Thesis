@@ -101,6 +101,7 @@ def activity_DHT22():
                 uq.clearList(lista_valori_dht22_umidita)
                 M_temperatura_aria = 0
                 M_umidita_aria = 0
+                M_umidita_suolo = 0
             #Ventilazione Alta
             elif M_umidita_aria > Max_umidita_aria:
                 activitycaso("ventilazione alta")
