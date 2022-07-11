@@ -10,7 +10,8 @@ GPIO.setwarnings(False)
 GPIO.setup(17, GPIO.OUT)
 
 while(1):
+    time.sleep(5)
     GPIO.output(17, GPIO.HIGH)
     time.sleep(5)
     GPIO.output(17, GPIO.LOW)
-    time.sleep(5)
+    
