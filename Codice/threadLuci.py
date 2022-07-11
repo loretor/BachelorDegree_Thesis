@@ -1,3 +1,5 @@
+from pickle import TRUE
+from tempfile import TemporaryDirectory
 from threading import Thread
 import time
 from datetime import datetime, timedelta
@@ -9,39 +11,39 @@ class Thread_padre(Thread):
         self.identificativo = identificativo
 
     def run(self):
-        i = 0
-        while i < 2:
-            print("I am the father")
+        print("I am the father")
+       
+        while TRUE:
             t1 = Thread_paralleli(identificativo = "DHT22" )
             t2 = Thread_paralleli(identificativo = "Capacitive" )
 
-            #if (t1.is_alive() and t2.is_alive()):
-            print("Ho acceso le luci")
-
             t1.start()
             t2.start()
-
-            t1.join()
-            t2.join()
-
-            print("Spegni le luci")
-            i = i +1
-
+            #luci accese, T1 e T2 lavorano
+            print("Ho acceso le luci")
             orario_attuale = datetime.now()
-            print(orario_attuale)
-
-            confronto = datetime.now()
-            confronto += timedelta(days = 1)
-            confronto = confronto.replace(hour = 7, minute = 0, second = 0)
-
-
-            print(confronto)
-
-            while orario_attuale < confronto:
+            confronto_sera = orario_attuale.replace(hour = 12, minute = 5, second = 0)
+            #faccio dormire il thread luci, continuano T1 e T2 (sono tra le 7 e le 20)
+            while orario_attuale < confronto_sera:
                 print("Sto dormendo...")
                 time.sleep(2)
-                orario_attuale = datetime.now()
+                orario_attuale = datetime.now() 
 
+            orario_attuale = datetime.now() 
+            print(orario_attuale)
+
+            confronto_mattina = datetime.now()
+           #confronto_mattina += timedelta(days = 1)
+            confronto_mattina = confronto_mattina.replace(hour = 12, minute = 6, second = 0)
+#SPEGNI PIN SCHEDA REALAIS
+            #stoppo T1 e T2 e spengo luci (siamo tra le 20 e le 7)
+            print(confronto_mattina)
+            print("Spegni le luci")
+            #faccio dormire il thread luci,  T1 e T2 sono stoppati
+            while orario_attuale < confronto_mattina:
+                print("Sto dormendo...")
+                time.sleep(10)
+                orario_attuale = datetime.now()
 
 #thread figli
 class Thread_paralleli(Thread):
@@ -52,10 +54,16 @@ class Thread_paralleli(Thread):
     def run(self):
         print("I'm Thread "+self.identificativo)
         i = 0
-        c = 5
-        while i < c:
+        orario_attuale = datetime.now()
+        confronto = orario_attuale.replace(hour = 12, minute = 5, second = 0)
+        while orario_attuale<confronto:
+            time.sleep(3)
             print(self.identificativo + " " +str(i))
             i = i + 1
+            orario_attuale = datetime.now()
+    
+    def dormi(self, tempo):
+        time.sleep(tempo)
 
 
 t = Thread_padre(identificativo = "padre" )
