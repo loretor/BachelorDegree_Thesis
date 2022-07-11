@@ -99,6 +99,7 @@ def activity_DHT22():
                 #azzeriamo le medie e svuotiamo gli array
                 uq.clearList(lista_valori_dht22_temperatura)
                 uq.clearList(lista_valori_dht22_umidita)
+                uq.clearList(lista_valori_capacitive)
                 M_temperatura_aria = 0
                 M_umidita_aria = 0
                 M_umidita_suolo = 0
