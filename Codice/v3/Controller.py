@@ -29,7 +29,7 @@ class Thread_padre(Thread):
             rel.relais_ON_luce(GPIO_luci)
             orario_attuale = datetime.now()
             print(orario_attuale)
-            confronto_sera = orario_attuale.replace(hour = 15, minute = 29, second = 0)
+            confronto_sera = orario_attuale.replace(hour = 16, minute = 20, second = 0)
             
             #faccio dormire il thread luci, continuano T1 e T2 (sono tra le 7 e le 20)
             while orario_attuale < confronto_sera:
@@ -42,7 +42,7 @@ class Thread_padre(Thread):
 
             confronto_mattina = datetime.now()
             #confronto_mattina += timedelta(days = 1)
-            confronto_mattina = confronto_mattina.replace(hour = 15, minute = 30, second = 0)
+            confronto_mattina = confronto_mattina.replace(hour = 16, minute = 21, second = 0)
             
             # per sicurezza si aprono tutti i circuiti della scheda relais per evitare che qualche attuatore rimanga attivo
             rel.relais_OFF()
