@@ -31,6 +31,7 @@ Min_umidita_aria = 50
 Min_umidita_suolo = 40
 countIrrigazioni = 0
 numeroIrrigazioni = 2 # dopo quante irrigazioni bisogna fertilizzare
+altezzariferimento_vuoto = 12
 
 # numero di porte GPIO per gli attuatori
 GPIO_pompa_irrigazione = 17
@@ -58,7 +59,7 @@ class Thread_paralleli(Thread):
         orario_attuale = datetime.now()
         #mettere come tempo 5 minuti prima delle 20, di modo tale da evitare problemi di sincronizzazione con il thread padre che
         #termina alle 20         
-        confronto = orario_attuale.replace(hour = 15, minute = 28, second = 0)
+        confronto = orario_attuale.replace(hour = 16, minute = 19, second = 0)
         
         #il run del thread viene fatto solo quando l'orario è prima delle 20:00      
         while orario_attuale < confronto:
@@ -127,6 +128,11 @@ def activity_DHT22():
                 M_umidita_aria = 0
                 M_umidita_suolo = 0
                 
+                altezza_vuoto = cir.hcsr()
+                print(altezza_vuoto)
+#                 if altezza_vuoto > altezzariferimento_vuoto:
+                    #AGGIUNGERE VARIABILE NEL FILE JSON CHE DICE CHE SERVE AGGIUNGERE ACQUA 
+                
             #Ventilazione Alta
             elif M_umidita_aria > Max_umidita_aria:
                 #accendiamo la scheda
@@ -184,9 +190,17 @@ def activity_Capacitive():
                     countIrrigazioni = 0
                     #accendiamo la scheda
                     rel.relais_attuatori(GPIO_pompa_fertilizzante, time_fertilizzante)
+                
+                altezza_vuoto = cir.hcsr()
+                print(altezza_vuoto)
+                #if altezza_vuoto > altezzariferimento_vuoto:
+                #AGGIUNGERE VARIABILE NEL FILE JSON CHE DICE CHE SERVE AGGIUNGERE ACQUA 
+               
+               
 
         print(list(lista_valori_capacitive.queue))
         print("M: "+str(M_umidita_suolo))
         print("--------------------")
     except:
         pass
+
