@@ -12,7 +12,7 @@ Nella cartella [Codice](/Codice) sono presenti tutti i file .py creati per contr
 
 Nella cartella [Codice/v4](/Codice/v4) è presente tutto il codice necessario per controllare raspberry, con una suddivisione in vari moduli per poter organizzare meglio tutto il codice.
 
-Il file [controller.py](Codice/controller.py) è il cuore del controlloro di raspberry per poter permettere alla scheda di svolgere più attività e controllare lo scheduling di queste ultime.
+Il file [controller.py](Codice/v4/controller.py) è il cuore del controlloro di raspberry per poter permettere alla scheda di svolgere più attività e controllare lo scheduling di queste ultime.
 
 # 📡 Spiegazione controller.py
 Il flow di controllo del rapsberry è fortemente influenzato dallo StateChart presente nella cartella [Modelli](/Modelli).
@@ -118,7 +118,7 @@ Spieghiamo prima come sono creati i thread e poi come abbiamo gestito il loro sc
 I thread hanno associata una funzione che rappresenta il loro task da svolgere. La funzione sia nel caso di DHT22 che nel caso del Capacitive Soil Moisture Sensor consiste:
 - porzione di codice dove si setta il collegamento tra raspberry e il sensore per ottenere il dato (è uno dei file .py presenti nella cartella Codici che abbiamo integrato in questa funzione specifica.
 - aggiorna i valori della prorpia queue con il metodo visto in precedenza
-- sulla base dei valori ottenuti fa dei controlli e in caso richiama delle funzioni del modulo [Circuits.py](Codice/Circuits.py) .
+- sulla base dei valori ottenuti fa dei controlli e in caso richiama delle funzioni del modulo [Circuits.py](Codice/v4/Circuits.py) .
 - se si entra in uno degli if viene attivato un attuatore e si eliminano tutti i valori all'interno della propria queue (in questo modo di fatto è come se si facesse un reset delle misurazioni).
 
 Riportiamo ad esempio la funzione del DTH22, per il capacitive è simile, la si trova nel codice come def activity_Capacitive():
