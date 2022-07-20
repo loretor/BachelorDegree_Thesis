@@ -118,55 +118,55 @@ Spieghiamo prima come sono creati i thread e poi come abbiamo gestito il loro sc
 I thread hanno associata una funzione che rappresenta il loro task da svolgere. La funzione sia nel caso di DHT22 che nel caso del Capacitive Soil Moisture Sensor consiste:
 - porzione di codice dove si setta il collegamento tra raspberry e il sensore per ottenere il dato (è uno dei file .py presenti nella cartella Codici che abbiamo integrato in questa funzione specifica.
 - aggiorna i valori della prorpia queue con il metodo visto in precedenza
-- sulla base dei valori ottenuti fa dei controlli e in caso stampa a video l'attività che dovrebbe svolgere (per ora non abbiamo integrato al controller.py tutta la parte di gestione della scheda realais che abbiamo sui codici singoli presenti in Modelli, in quanto abbiamo voluto effettuare prima delle fasi di testing per controllare che il lavoro dei thread funzioni correttamente).
-- se si entra in uno degli if (quindi verrebbe teoricamente acceso un attuatore) si eliminano tutti i valori all'interno della propria queue (in questo modo di fatto è come se si facesse un reset delle misurazioni).
+- sulla base dei valori ottenuti fa dei controlli e in caso richiama delle funzioni del modulo [Circuits.py](Codice/Circuits.py) .
+- se si entra in uno degli if viene attivato un attuatore e si eliminano tutti i valori all'interno della propria queue (in questo modo di fatto è come se si facesse un reset delle misurazioni).
 
 Riportiamo ad esempio la funzione del DTH22, per il capacitive è simile, la si trova nel codice come def activity_Capacitive():
 ```python
-## funzione attività del sensore DTH22, per misura umidità aria e temperatura
-def activity_DHT22():
-    global M_temperatura_aria
-    global M_umidita_aria
-    
-#     lettura valori
-    DHT = 21
-    h,t = dht.read_retry(dht.DHT22, DHT)
+ #lettura valori
+        h,t = cir.dht22()
 
-    print('DHT22')
-    #aggiorno la lista_valori_dht22_temperatura e la M_temperatura_aria
-    M_temperatura_aria = update_M(lista_valori_dht22_temperatura, M_temperatura_aria, t)
-    M_umidita_aria = update_M(lista_valori_dht22_umidita, M_umidita_aria, h)
-    
-#     controllo attività
-#   le attività possono essere svolte solo se l'array dei valori è pieno
-    if(lista_valori_dht22_umidita.full()):
-#       Umidificazione
-        if M_umidita_aria < Min_umidita_aria:
-            activitycaso("umidificazione") 
-            time.sleep(10)
-#             azzeriamo le medie e svuotiamo gli array
-            clearList(lista_valori_dht22_temperatura)
-            clearList(lista_valori_dht22_umidita)
-            M_temperatura_aria = 0
-            M_umidita_aria = 0
-#        Ventilazione Alta
-        elif M_umidita_aria > Max_umidita_aria:
-            activitycaso("ventilazione alta")
-            time.sleep(10)
-            #             azzeriamo le medie e svuotiamo gli array
-            clearList(lista_valori_dht22_temperatura)
-            clearList(lista_valori_dht22_umidita)
-            clearList(lista_valori_capacitive)
-            M_temperatura_aria = 0
-            M_umidita_aria = 0
-            M_umidita_suolo = 0
-         
-    print(list(lista_valori_dht22_umidita.queue))
-    print("M: "+str(M_umidita_aria))
-    print("--------------------")
-    print(list(lista_valori_dht22_temperatura.queue))
-    print("M: "+str(M_temperatura_aria))
-    print("--------------------")
+        print('DHT22')
+        #aggiorno la lista_valori_dht22_temperatura e la M_temperatura_aria
+        #t = random.randint(0,22)
+        M_temperatura_aria = uq.update_M(lista_valori_dht22_temperatura, M_temperatura_aria, t)
+        M_umidita_aria = uq.update_M(lista_valori_dht22_umidita, M_umidita_aria, h)
+
+        #controllo attività
+        #le attività possono essere svolte solo se l'array dei valori è pieno
+        if(lista_valori_dht22_umidita.full()):
+            #Umidificazione
+            if M_umidita_aria < Min_umidita_aria:
+                #accendiamo la scheda
+                print("UMIDIFICAZIONE")
+                rel.relais_attuatori(GPIO_pompa_umidificazione, time_umidificazione)
+
+                #azzeriamo le medie e svuotiamo gli array
+                uq.clearList(lista_valori_dht22_temperatura)
+                uq.clearList(lista_valori_dht22_umidita)
+                uq.clearList(lista_valori_capacitive)
+                M_temperatura_aria = 0
+                M_umidita_aria = 0
+                M_umidita_suolo = 0
+
+                altezza_vuoto = cir.hcsr()
+                print(altezza_vuoto)
+#                 if altezza_vuoto > altezzariferimento_vuoto:
+                    #AGGIUNGERE VARIABILE NEL FILE JSON CHE DICE CHE SERVE AGGIUNGERE ACQUA
+
+            #Ventilazione Alta
+            elif M_umidita_aria > Max_umidita_aria:
+                #accendiamo la scheda
+                print("VENTILAZIONE")
+                rel.relais_attuatori(GPIO_ventola, time_ventola)
+
+                #azzeriamo le medie e svuotiamo gli array
+                uq.clearList(lista_valori_dht22_temperatura)
+                uq.clearList(lista_valori_dht22_umidita)
+                uq.clearList(lista_valori_capacitive)
+                M_temperatura_aria = 0
+                M_umidita_aria = 0
+                M_umidita_suolo = 0
 ```
 
 Per ultimo trattiamo lo scheduling dei thread.
