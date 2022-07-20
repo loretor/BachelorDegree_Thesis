@@ -12,7 +12,7 @@ Nella cartella [Codice](/Codice) sono presenti tutti i file .py creati per contr
 
 Nella cartella [Codice/v4](/Codice/v4) è presente tutto il codice necessario per controllare raspberry, con una suddivisione in vari moduli per poter organizzare meglio tutto il codice.
 
-Il file [controller.py](Codice/v4/controller.py) è il cuore del controlloro di raspberry per poter permettere alla scheda di svolgere più attività e controllare lo scheduling di queste ultime.
+Il file [controller.py](/Codice/v4/Controller.py) è il cuore del controlloro di raspberry per poter permettere alla scheda di svolgere più attività e controllare lo scheduling di queste ultime.
 
 # 📡 Spiegazione controller.py
 Il flow di controllo del rapsberry è fortemente influenzato dallo StateChart presente nella cartella [Modelli](/Modelli).
