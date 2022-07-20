@@ -10,12 +10,62 @@ Nella cartella [Modelli](/Modelli) sono presenti le rappresentazioni UML del pro
 
 Nella cartella [Codice](/Codice) sono presenti tutti i file .py creati per controllare sensori e attuatori tramite Raspberry. In particolare sono presenti i file python che sono stati usati per controllare singolarmente i sensori e per chiudere ed aprire il circuito che collega rasperry alla scheda relais.
 
-Il file [controller.py](Codice/controller.py) è la prima versione di codice python che verrà utilizzato per poter controllare raspberry e poter permettere alla scheda di svolgere più attività e controllare lo scheduling di queste ultime.
+Nella cartella [Codice/v4](/Codice/v4) è presente tutto il codice necessario per controllare raspberry, con una suddivisione in vari moduli per poter organizzare meglio tutto il codice.
+
+Il file [controller.py](Codice/controller.py) è il cuore del controlloro di raspberry per poter permettere alla scheda di svolgere più attività e controllare lo scheduling di queste ultime.
 
 # 📡 Spiegazione controller.py
-Il file è ancora abbastanza confuso; in futuro l'idea è quella di suddividere ogni classe in un file python proprio, di modo tale poi da avere una migliore organizzazione del progetto. 
 Il flow di controllo del rapsberry è fortemente influenzato dallo StateChart presente nella cartella [Modelli](/Modelli).
-Per ora siamo riusciti a implementare tramite codice solamente la parte interna allo stato "Luce accesa", focalizzandoci sullo scheduling delle due diverse attività di lettura del sensore DTH22 (per la temperatura e umidità dell'aria) e del sensore Capacitive Soil Moisture (per la temperatura del suolo).
+Il ciclo di attività della serra è 08:00/20:00. Nel file controller.py viene attivato un Thread che controlla l'accensione delle luci per la serra. In particolare l'accensione segue esattamente il ciclo di attività mostrato sopra. Tra le 20:00 e le 08:00 il thread spegne le luci e viene momentaneamente addormentato.
+Durante il ciclo, invece, vengono creati due thread che si occupano delle attività di controllo della serra con la lettura dei valori dei sensori e l'eventuale accensione o spegnimento degli attuatori per regolare le variabili ambiente.
+(Per ora gli orari non sono corretti, in quanto rispecchiano i test che stiamo svolgendo per verificare il corretto funzionamento del sistema).
+```python
+    class Thread_padre(Thread):
+    def __init__(self, identificativo):
+        Thread.__init__(self)
+        self.identificativo = identificativo
+
+    def run(self):
+        print("I am the father")
+
+        while TRUE:
+            t1 = figli.Thread_paralleli(activity = figli.activity_DHT22, identificativo = "DHT22" )
+            t2 = figli.Thread_paralleli(activity = figli.activity_Capacitive, identificativo = "Capacitive" )
+
+            t1.start()
+            t2.start()
+
+            #luci accese, T1 e T2 lavorano
+            rel.relais_ON_luce(GPIO_luci)
+            orario_attuale = datetime.now()
+            print(orario_attuale)
+            confronto_sera = orario_attuale.replace(hour = 16, minute = 20, second = 0)
+
+            #faccio dormire il thread luci, continuano T1 e T2 (sono tra le 7 e le 20)
+            while orario_attuale < confronto_sera:
+                print("Sto dormendo...")
+                time.sleep(30)
+                #inviamo i dati al cloud
+                chiamata_Http()
+                orario_attuale = datetime.now()
+
+            orario_attuale = datetime.now()
+            #print(orario_attuale)
+
+            confronto_mattina = datetime.now()
+            #confronto_mattina += timedelta(days = 1)
+            confronto_mattina = confronto_mattina.replace(hour = 16, minute = 21, second = 0)
+
+            # per sicurezza si aprono tutti i circuiti della scheda relais per evitare che qualche attuatore rimanga attivo
+            rel.relais_OFF()
+            #stoppo T1 e T2 e spengo luci (siamo tra le 20 e le 7)
+            rel.relais_OFF_luce(GPIO_luci)
+            #faccio dormire il thread luci,  T1 e T2 sono stoppati
+            while orario_attuale < confronto_mattina:
+                print("Sto dormendo...")
+                time.sleep(10)
+                orario_attuale = datetime.now()
+```
 
 Queste due attività sono state implementate con dei thread che condividono un lock per la risorsa condivisa. Ogni attività di lettura dei due sensori si basa su una lista di misurazioni. In particolare ognuno dei due thread ha associato una [queue](https://docs.python.org/3/library/queue.html) di valori, tale per cui ogni volta che il sensore legge un valore lo inserisce nella sua queue. Se la queue è piena si elimina il valore più vecchio che è stato letto dal sensore e si aggiunge il nuovo (politica FIFO). 
 E' stata scelta questa gestione dei valori letti da un sensore per rendere statisticamente più valide le misurazioni. Infatti può accadere (data la scarsa qualità di alcuni sensori) che ci possano essere delle letture errate o che non si misurino correttamente dei dati. Per rendere quindi tali misurazioni il meno impattanti possibili sul controllore, è necessario aumentare il numero di campioni e lavorare sempre sulla media di questi ultimi.
