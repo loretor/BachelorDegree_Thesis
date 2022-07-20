@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import './schermata.dart';
+import './schermatainiziale.dart';
 
 import 'package:flutter/material.dart';
 
@@ -19,12 +19,24 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Color(0xFF121212),
         appBar: AppBar(
-          title: const Text("Race Results App"),
-          backgroundColor: Color.fromARGB(255, 25, 25, 25),
           centerTitle: true,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              Text(
+                "Greenhouse Application"
+              ),
+              Icon(
+                IconData(
+                  0xf050a, fontFamily: 'MaterialIcons'
+                ),
+                color: Color.fromARGB(255, 5, 59, 6)
+              )
+            ]
+          ),
+          backgroundColor: Colors.green,
         ),
-        body: schermata());
+        body: schermatainiziale());
   }
 }
