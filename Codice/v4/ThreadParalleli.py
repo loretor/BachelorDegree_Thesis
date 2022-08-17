@@ -215,19 +215,28 @@ def get_values():
     pompa_umidita = GPIO.input(GPIO_pompa_umidificazione)
     pompa_fertilizzante = GPIO.input(GPIO_pompa_fertilizzante)
     ventola = GPIO.input(GPIO_ventola)
-
+    
+    #otteniamo l'ora
+    now = datetime.datetime.now()
+    ora = str(now.hour) +":"+ str(now.minute)
+    
+    #formattazione JSON
     contenuto = {
-                    "Media temperatura aria": M_temperatura_aria,
-                    "Media umidita aria": M_umidita_aria,
-                    "Media umidita suolo": M_umidita_suolo,
-                    "Lista temperatura aria": list(lista_valori_dht22_temperatura.queue),
-                    "Lista umidita aria": list(lista_valori_dht22_umidita.queue),
-                    "Lista umidita suolo": list(lista_valori_capacitive.queue),
-                    "Altezza riferimento": altezzariferimento_vuoto,
-                    "Altezza letta": altezza_vuoto,
-                    "Stato pompa irrigazione": pompa_irrigazione,
-                    "Stato pompa umidita": pompa_umidita,
-                    "Stato pompa fertilizzante": pompa_fertilizzante,
-                    "Stato ventola": ventola
+                    "dati":[
+                        {
+                            "Media temperatura aria": M_temperatura_aria,
+                            "Media umidita aria": M_umidita_aria,
+                            "Media umidita suolo": M_umidita_suolo,
+                            #"Lista umidita aria": list(lista_valori_dht22_umidita.queue),
+                            "Livello acqua": altezza_vuoto,
+                            "Orario": ora
+                        },
+                        {
+                            "Pompa irrigazione": pompa_irrigazione,
+                            "Pompa umidita": pompa_umidita,
+                            "Pompa fertilizzante": pompa_fertilizzante,
+                            "Ventola": ventola
+                        }
+                    ]
                 }
     return contenuto
