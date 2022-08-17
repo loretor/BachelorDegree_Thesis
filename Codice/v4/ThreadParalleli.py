@@ -210,8 +210,8 @@ def activity_Capacitive():
 
 #creazione file json con tutti i valori utili
 def get_values():
-    # To test the value of a pin use the .input method
-    pompa_irrigazione = GPIO.input(GPIO_pompa_irrigazione)  # Returns 0 if OFF or 1 if ON POTREBBERO ESSERE INVERTITI
+    # Ritorna 0 se OFF o 1 se ON
+    pompa_irrigazione = GPIO.input(GPIO_pompa_irrigazione)  
     pompa_umidita = GPIO.input(GPIO_pompa_umidificazione)
     pompa_fertilizzante = GPIO.input(GPIO_pompa_fertilizzante)
     ventola = GPIO.input(GPIO_ventola)
