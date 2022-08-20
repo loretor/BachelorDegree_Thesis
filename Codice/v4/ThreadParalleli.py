@@ -30,7 +30,7 @@ Max_umidita_aria = 60
 Min_umidita_aria = 50
 Min_umidita_suolo = 40
 countIrrigazioni = 0
-numeroIrrigazioni = 2 # dopo quante irrigazioni bisogna fertilizzare
+numeroIrrigazioni = 3 # dopo quante irrigazioni bisogna fertilizzare
 altezzariferimento_vuoto = 12
 altezza_vuoto = 0
 
