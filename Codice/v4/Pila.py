@@ -1,6 +1,6 @@
 #classe custom per gestire la queue dei thread che richiedono un lock condiviso
-class pila:
-    #la pila ha due campi
+class coda:
+    #la coda ha due campi
     #lista di thread che è un array chiamato Elementi
     #l'ultimo elemento che è stato buttato fuori dalla lista che all'inizio è 1 a caso
     def __init__(self):
