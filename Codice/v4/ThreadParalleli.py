@@ -4,14 +4,14 @@ import time
 from datetime import datetime, timedelta
 
 #import dei vari moduli presenti nella stessa cartella di Controller.py
-import Pila as pila
+import Coda as coda
 import UpdateQueue as uq
 import Circuits as cir
 import Relais as rel
 
 #variabili globali
 mutex = RLock()
-q = pila.pila()
+q = coda.coda()
 
 Listdimension = 5
 
