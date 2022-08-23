@@ -21,9 +21,6 @@ Future<List> getData() async {
   }
 }
 
-void ciao(){
-
-}
 
 class schermatainiziale extends StatefulWidget {
   const schermatainiziale({Key? key}) : super(key: key);
