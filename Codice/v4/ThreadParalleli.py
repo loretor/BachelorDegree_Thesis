@@ -223,7 +223,7 @@ def get_values():
     ora = str(now.hour) +":"+ str(now.minute)
     
     ampiezza = altezzariferimento_vuoto - altezza_vuoto
-    percentuale = ampiezza * 100 / altezzariferimento_vuoto
+    percentuale = int(ampiezza * 100 / altezzariferimento_vuoto)
     
     #formattazione JSON
     contenuto = {
