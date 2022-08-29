@@ -217,7 +217,7 @@ def get_values():
     ventola = GPIO.input(GPIO_ventola)
     
     #otteniamo l'ora
-    now = datetime.datetime.now()
+    now = datetime.now()
     ora = str(now.hour) +":"+ str(now.minute)
     
     #formattazione JSON
