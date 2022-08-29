@@ -61,7 +61,6 @@ def hcsr():
 
         # siamo sicuri che il trigger sia a false
         GPIO.output(TRIG, False)
-        print("Waiting for sensor to settle")
         time.sleep(2)
 
         # il segnale in ingresso necessita di un impulso di 10uS
