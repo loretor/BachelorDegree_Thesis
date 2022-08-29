@@ -193,10 +193,7 @@ def activity_Capacitive():
 
                 altezza_vuoto = cir.hcsr()
                 print(altezza_vuoto)
-                #if altezza_vuoto > altezzariferimento_vuoto:
-                #AGGIUNGERE VARIABILE NEL FILE JSON CHE DICE CHE SERVE AGGIUNGERE ACQUA
-
-
+             
 
         print(list(lista_valori_capacitive.queue))
         print("M: "+str(M_umidita_suolo))
