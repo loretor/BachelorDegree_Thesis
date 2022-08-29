@@ -16,7 +16,7 @@ GPIO_luci = 23
 
 #funzione per inviare i dati al cloud
 def chiamata_Http():
-    #il body della chiamata POST lo mettiamo in JSON che è più facile da gestire anche per python
+    #il body della chiamata POST viene salvato in formato JSON, in questo modo è più facile da gestire anche per python
     contenuto = figli.get_values()
     r = requests.post(URL+"/upload", json = contenuto)
 
