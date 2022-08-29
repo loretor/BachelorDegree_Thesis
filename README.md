@@ -14,3 +14,7 @@ Nella cartella [Codice/v4](/Codice/v4) è presente tutto il codice necessario pe
 
 Il file [controller.py](/Codice/v4/Controller.py) è il cuore del controlloro di raspberry per poter permettere alla scheda di svolgere più attività e controllare lo scheduling di queste ultime.
 
+Nella cartella [Codice/AWS](/Codice/v4) sono presenti i due file Python necessari per il controllo delle funzioni lambda dell'architettura Cloud
+
+
+
