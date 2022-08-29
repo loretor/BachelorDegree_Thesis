@@ -2,7 +2,7 @@
 class coda:
     #la coda ha due campi
     #lista di thread che è un array chiamato Elementi
-    #l'ultimo elemento che è stato buttato fuori dalla lista che all'inizio è 1 a caso
+    #l'ultimo elemento della lista che è uscito tramite pop e inizialmente lo mettiamo a 1
     def __init__(self):
         self.Elementi = []
         self.lastpop = 1
@@ -11,7 +11,7 @@ class coda:
     def push(self, element):
         self.Elementi.append(element)
 
-    #la pop aggiorna il nuovo ultimo elemento che viene buttato fuori e poi lo toglie
+    #la pop aggiorna il nuovo ultimo elemento che subisce il pop e poi lo toglie effettivamente dalla lista
     def pop(self):
         self.lastpop = self.head()
         return self.Elementi.pop(0)
