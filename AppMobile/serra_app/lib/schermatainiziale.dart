@@ -542,7 +542,7 @@ Widget statoattuatori(Future<List<dynamic>> dati){
           return 
                 Column(
                   children: stati.entries.map( (entry){
-                    if(entry.value == 1){
+                    if(entry.value == 0){
                       return ListTile(
                         //contentPadding: const EdgeInsets.all(16.0),
                         title: Text(entry.key),
