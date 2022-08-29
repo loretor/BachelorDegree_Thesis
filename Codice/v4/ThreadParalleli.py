@@ -3,7 +3,7 @@ import time, queue, random
 import time
 from datetime import datetime, timedelta
 
-#import dei vari moduli presenti nella stessa cartella di Controller.py
+#import dei moduli presenti nella stessa cartella di Controller.py
 import Coda as coda
 import UpdateQueue as uq
 import Circuits as cir
@@ -15,12 +15,12 @@ q = coda.coda()
 
 Listdimension = 5
 
-#liste per fare una media di un certo numero di valori e non considerare solo il singolo
+#liste per fare una media di un certo numero di valori e non considerare solo il singolo dato
 lista_valori_dht22_temperatura = queue.Queue(Listdimension)
 lista_valori_dht22_umidita = queue.Queue(Listdimension)
 lista_valori_capacitive = queue.Queue(Listdimension)
 
-#valori di riferimento per prendere decisioni
+#inizializzazione delle medie
 M_temperatura_aria = 0
 M_umidita_aria = 0
 M_umidita_suolo = 0
@@ -30,17 +30,17 @@ Max_umidita_aria = 60
 Min_umidita_aria = 50
 Min_umidita_suolo = 40
 countIrrigazioni = 0
-numeroIrrigazioni = 3 # dopo quante irrigazioni bisogna fertilizzare
+numeroIrrigazioni = 3 # definisce dopo quante irrigazioni bisogna fertilizzare
 altezzariferimento_vuoto = 12
 altezza_vuoto = 0
 
-# numero di porte GPIO per gli attuatori
+# assegnazione delle porte GPIO per gli attuatori
 GPIO_pompa_irrigazione = 17
 GPIO_pompa_umidificazione = 27
 GPIO_pompa_fertilizzante = 22
 GPIO_ventola = 24
 
-# tempi di attesa per il funzionamento dei vari attuatori
+# tempi di funzionamento degli attuatori
 time_irrigazione = 10
 time_umidificazione = 10
 time_fertilizzante = 10
@@ -60,7 +60,7 @@ class Thread_paralleli(Thread):
         orario_attuale = datetime.now()
         #mettere come tempo 5 minuti prima delle 20, di modo tale da evitare problemi di sincronizzazione con il thread padre che
         #termina alle 20
-        confronto = orario_attuale.replace(hour = 16, minute = 19, second = 0)
+        confronto = orario_attuale.replace(hour = 19, minute = 55, second = 0)
 
         #il run del thread viene fatto solo quando l'orario è prima delle 20:00
         while orario_attuale < confronto:
@@ -70,7 +70,7 @@ class Thread_paralleli(Thread):
             if(q.length() == 0):
                 #se però il thread è già stato servito per ultimo secondo la lista, allora non lo metteremo in attesa perchè vogliamo evitare di servirlo due volte di fila
                 #se infatti il t1 è più veloce di t2 e verifica due volte di fila questa condizione q.length == 0 rischia di fare due volte di fila le sue attività cosa che non vogliamo
-                #quindi questo spiega il perchè serve avere il lastpop, di modo tale che fino a che t1 è l'ulitmo a essere stato poppato non può prendersi il lock
+                #quindi questo spiega il perchè serve avere il lastpop, di modo tale che fino a che t1 è l'ulitmo ad aver fatto il pop non può prendersi il lock
                 if(q.lastpop != self.identificativo):
                     q.push(self.identificativo)
 
@@ -88,7 +88,7 @@ class Thread_paralleli(Thread):
                         q.push(self.identificativo)
 
             mutex.release()
-            #la dormita è solo per rendere la simulazione più lenta se no non si vede niente
+            #lo sleep serve solo per rendere la simulazione più lenta 
             time.sleep(2)
             orario_attuale = datetime.now()
 
@@ -102,7 +102,7 @@ def activity_DHT22():
     global M_umidita_aria
     global altezza_vuoto
 
-    #try perchè potrebbe accadere che a volte la lettura del valore non vada a buon fine, e per evitare che il sistema si interrompa, tralasciamo tale misurazione
+    #try perchè potrebbe accadere che a volte la lettura del valore non vada a buon fine. Per evitare che il sistema si interrompa, tralasciamo tale misurazione
     try:
         #lettura valori
         h,t = cir.dht22()
@@ -130,12 +130,7 @@ def activity_DHT22():
                 M_umidita_aria = 0
                 M_umidita_suolo = 0
 
-                altezza_vuoto = cir.hcsr()
-                print(altezza_vuoto)
-#                 if altezza_vuoto > altezzariferimento_vuoto:
-                    #AGGIUNGERE VARIABILE NEL FILE JSON CHE DICE CHE SERVE AGGIUNGERE ACQUA
-
-            #Ventilazione Alta
+            #Ventilazione 
             elif M_umidita_aria > Max_umidita_aria:
                 #accendiamo la scheda
                 print("VENTILAZIONE")
@@ -187,7 +182,7 @@ def activity_Capacitive():
                 uq.clearList(lista_valori_capacitive)
                 M_umidita_suolo = 0
 
-                #se il numero di irrigazioni arriva a un tot allora si fertilizza e si azzera
+                #se il numero di irrigazioni arriva a un tot allora si fertilizza e si azzera il countIrrigazioni
                 if countIrrigazioni >= numeroIrrigazioni:
                     print("FERTILIZZAZIONE")
                     countIrrigazioni = 0
@@ -196,8 +191,6 @@ def activity_Capacitive():
 
                 altezza_vuoto = cir.hcsr()
                 print(altezza_vuoto)
-                #if altezza_vuoto > altezzariferimento_vuoto:
-                #AGGIUNGERE VARIABILE NEL FILE JSON CHE DICE CHE SERVE AGGIUNGERE ACQUA
 
 
 
