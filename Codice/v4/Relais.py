@@ -5,8 +5,7 @@ import time
 def relais_attuatori(num_porta, tempo):
     # per settare la nomenclatura dei GPIO
     GPIO.setmode(GPIO.BCM)
-    # GPIO.cleanup()
-
+ 
     GPIO.setwarnings(False)
     # settaggio pin che vogliamo usare con la nomenclatura bcm
     GPIO.setup(num_porta, GPIO.OUT)
@@ -20,7 +19,6 @@ def relais_attuatori(num_porta, tempo):
 def relais_ON_luce(num_porta):
     # per settare la nomenclatura dei GPIO
     GPIO.setmode(GPIO.BCM)
-    # GPIO.cleanup()
 
     GPIO.setwarnings(False)
     # settaggio pin che vogliamo usare con la nomenclatura bcm
@@ -33,7 +31,6 @@ def relais_ON_luce(num_porta):
 def relais_OFF_luce(num_porta):
     # per settare la nomenclatura dei GPIO
     GPIO.setmode(GPIO.BCM)
-    # GPIO.cleanup()
 
     GPIO.setwarnings(False)
     # settaggio pin che vogliamo usare con la nomenclatura bcm
