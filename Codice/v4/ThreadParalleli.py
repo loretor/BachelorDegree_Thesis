@@ -229,9 +229,9 @@ def get_values():
     contenuto = {
                     "dati":[
                         {
-                            "Media temperatura aria": round(M_temperatura_aria,2),
-                            "Media umidita aria": round(M_umidita_aria,2),
-                            "Media umidita suolo": round(M_umidita_suolo,2),
+                            "Media temperatura aria": int(M_temperatura_aria),
+                            "Media umidita aria": int(M_umidita_aria),
+                            "Media umidita suolo": int(M_umidita_suolo),
                             #"Lista umidita aria": list(lista_valori_dht22_umidita.queue),
                             "Livello acqua": percentuale,
                             "Orario": ora
