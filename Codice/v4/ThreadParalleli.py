@@ -31,8 +31,8 @@ Min_umidita_aria = 50
 Min_umidita_suolo = 40
 countIrrigazioni = 0
 numeroIrrigazioni = 3 # definisce dopo quante irrigazioni bisogna fertilizzare
-altezzariferimento_vuoto = 12
-altezza_vuoto = 0
+altezzariferimento_vuoto = 16
+altezza_vuoto = 16
 
 # assegnazione delle porte GPIO per gli attuatori
 GPIO_pompa_irrigazione = 17
