@@ -28,9 +28,13 @@ In particular, the first component is entirely dedicated to the control of envir
 
 ## Sensors and Attuators used
 - DHT22 sensor to measure the temperature and relative humidity of the greenhouse. 
+
 ![Image](/Images/DHT22.png)
-- CAPACITIVE SOIL MOISTURE sensor to measure the humidity of the soil. 
+
+- CAPACITIVE SOIL MOISTURE sensor to measure the humidity of the soil.
+ 
 ![Image](/Images/CSMS.png)
+
 - HC-SR04 sensor to monitor the level of water inside the tank used for irrigation, in order to notify the user when the tank is empty. 
 ![Image](/Images/HCSR04.png)
 - As actuators: some pumps, a fan, and a LED strip.
