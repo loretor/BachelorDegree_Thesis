@@ -18,5 +18,10 @@ In the folder [Codice/AWS](/Codice/AWS) there are all the .py files to create th
 
 In the folder [AppMobile/serra_app](/AppMobile/serra_app) there are all the files generated automatically by Flutter to run the application. In particular in the folder [AppMobile/serra_app/lib](/AppMobile/serra_app/lib) there are all the .dart files used for the user interface.
 
-
+## Structure of the system
+The thesis project is mainly composed of three components:
+1. The Embedded system
+2. The Cloud architecture
+3. The Mobile application
+In particular, the first component is entirely dedicated to the control of environmental parameters and the functioning of the greenhouse itself; the second is responsible for saving the data processed by Raspberry in the Cloud; the third is used to display what is saved remotely, thus being able to monitor the Embedded system.
 
