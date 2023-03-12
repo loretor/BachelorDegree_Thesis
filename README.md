@@ -26,3 +26,8 @@ The thesis project is mainly composed of three components:
 
 In particular, the first component is entirely dedicated to the control of environmental parameters and the functioning of the greenhouse itself; the second is responsible for saving the data processed by Raspberry in the Cloud; the third is used to display what is saved remotely, thus being able to monitor the Embedded system.
 
+## Sensors and Attuators used
+- DHT22 sensor to measure the temperature and relative humidity of the greenhouse.
+- CAPACITIVE SOIL MOISTURE sensor to measure the humidity of the soil.
+- HC-SR04 sensor to monitor the level of water inside the tank used for irrigation, in order to notify the user when the tank is empty.
+- As actuators: some pumps, a fan, and a LED strip.
