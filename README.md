@@ -43,3 +43,17 @@ In particular, the first component is entirely dedicated to the control of envir
 
 Here there is a circuit map of all the electronic devices connected together
 ![Image](/Images/Circuits.png)
+
+## Explanation of the StateChart
+We proceed to explain the scheduling of activities carried out by Raspberry, analyzing the possible states in which the system can be found.
+The operating cycle of the Raspberry board continues to alternate between two macrostates:
+- "lights off"
+- "lights on"
+During the time period between 08:00 and 20:00, Raspberry closes the circuit with the LEDs and turns them on, while after 20:00 until 08:00 of the following day, all activities on the board are interrupted and the lights are turned off. This is how the light and dark cycle for the greenhouse has been managed.
+
+When the lights are on, the two main threads are active. They manage an alternation in measurements between the two sensors, the DHT22 and the Capacitive Soil Moisture Sensor. The two threads also share a lock, which must be acquired to perform a measurement. Therefore, when the "lights on" phase starts, the system enters an idle state, waiting for one of the two threads to acquire the lock. Depending on which thread has the lock, the system proceeds in one of two directions, "DHT22 Reading" or "Capacitive Reading". At the end of these macro operations, the system returns to the central area of the state chart to release the lock and enter a subsequent idle state
+1. "DHT22 Reading" 
+The measurement is taken using the sensor, and then the new measurement is saved in a queue of values. The subsequent decisions are made based on the average of this list. 
+- If the average of the air humidity measurements falls within a pre-established minimum and maximum value, then we are in an ideal situation, and we return to the lock release phase. 
+- If, on the other hand, the air humidity average is greater than an acceptable maximum value, the fan is turned on and then off with the aim of reducing the humidity level through air recirculation. 
+- If the average is less than an acceptable minimum value, the humidification pump is turned on to increase the humidity beyond the minimum level allowed
