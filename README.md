@@ -1,22 +1,19 @@
-# Progetto di Tesi con Raspberry 👨‍💻
-Creazione di una serra automatica con la scheda Raspberry
+# Bachelor's Degree Thesis 👨‍💻
+This Bachelor's Degree thesis aims to develop an embedded system that can control a greenhouse by collecting data from various sensors and controlling actuators to maintain optimal growing conditions for plants. All the data processed by the embedded system will be saved in a very simple Cloud Infrastructure. Moreover, the system will also incorporate a user-friendly interface (Flutter application) to enable the user to monitor the greenhouse remotely, dowloading data from the Cloud.
 
-# 🧑‍💻 Componenti del gruppo di lavoro
+# 🧑‍💻 Components of the team
 - Matteo Carminati
 - Lorenzo Torri
 
-# 📂 Organizzazione della repository
-Nella cartella [Modelli](/Modelli) sono presenti le rappresentazioni UML del progetto. Per ora l'unica rappresentazione creata è quella di uno StateChart Diagram.
+# 📂 Explanation of the repositories
+In the folder [Modelli](/Modelli) there is a statechart UML representations of the project. 
 
-Nella cartella [Codice](/Codice) sono presenti tutti i file .py creati per controllare sensori e attuatori tramite Raspberry. In particolare sono presenti i file python che sono stati usati per controllare singolarmente i sensori e per chiudere ed aprire il circuito che collega rasperry alla scheda relais.
+In the folder [Codice/v4](/Codice/v4) there are all the .py files used to control Raspberry. In particular those files are in charge of getting data from sensors, analyze those data and then operate though the attuators when needed.
+In particular the file [controller.py](/Codice/v4/Controller.py) is the one used to control Raspberry, in order to schedule all the tasks and to parallelize them.
 
-Nella cartella [Codice/v4](/Codice/v4) è presente tutto il codice necessario per controllare raspberry, con una suddivisione in vari moduli per poter organizzare meglio tutto il codice.
+In the folder [Codice/AWS](/Codice/AWS) there are all the .py files to create the Cloud Infrastructure.
 
-Il file [controller.py](/Codice/v4/Controller.py) è il cuore del controlloro di raspberry per poter permettere alla scheda di svolgere più attività e controllare lo scheduling di queste ultime.
-
-Nella cartella [Codice/AWS](/Codice/AWS) sono presenti i due file Python necessari per il controllo delle funzioni lambda dell'architettura Cloud.
-
-Il folder [AppMobile/serra_app](/AppMobile/serra_app) presenta un'insieme di file generati da Flutter per poter eseguire l'applicazione Mobile. In particolare nella cartella [AppMobile/serra_app/lib](/AppMobile/serra_app/lib) sono presenti i file .dart sviluppati per la parte grafica
+In the folder [AppMobile/serra_app](/AppMobile/serra_app) there are all the files generated automatically by Flutter to run the application. In particular in the folder [AppMobile/serra_app/lib](/AppMobile/serra_app/lib) there are all the .dart files used for the user interface.
 
 
 
