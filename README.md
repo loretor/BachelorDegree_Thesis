@@ -69,3 +69,8 @@ The cloud infrastructure is done using AWS Technologies. In particular we used a
 - The application can retrieve such data with a call to the API Gateway URL + `/download`
 
 ![Image](/Images/Cloud.png)
+
+## Application with Flutter
+Here there are some screenshots of the very simple application to monitor remotely the informations of the greenhouse
+
+![Image](/Images/S1.png) ![Image](/Images/S2.png) ![Image](/Images/S3.png)
