@@ -6,8 +6,6 @@ This Bachelor's Degree thesis aims to develop an embedded system that can contro
   <img src="/Images/Greenhouse.png" />
 </p>
 
-![Image](/Images/Greenhouse.png)
-
 ⚠️Unfortunately the [paper of the thesis](/RelazioneTesi.pdf) is written in Italian. Here, in this Readme file, I will try to explain very shortly how the system is organized.
 
 ## 🧑‍💻 Components of the team
@@ -35,15 +33,21 @@ In particular, the first component is entirely dedicated to the control of envir
 ## Sensors and Attuators used
 - DHT22 sensor to measure the temperature and relative humidity of the greenhouse. 
 
-![Image](/Images/DHT22.png)
+<p align="center">
+  <img src="/Images/DHT22.png" />
+</p>
 
 - CAPACITIVE SOIL MOISTURE sensor to measure the humidity of the soil.
- 
-![Image](/Images/CSMS.png)
+
+<p align="center">
+  <img src="/Images/CSMS.png" />
+</p>
 
 - HC-SR04 sensor to monitor the level of water inside the tank used for irrigation, in order to notify the user when the tank is empty. 
 
-![Image](/Images/HCSR04.png)
+<p align="center">
+  <img src="/Images/HCSR04.png" />
+</p>
 
 - As actuators: some pumps, a fan, and a LED strip.
 
