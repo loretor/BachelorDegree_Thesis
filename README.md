@@ -44,7 +44,7 @@ In particular, the first component is entirely dedicated to the control of envir
 Here there is a circuit map of all the electronic devices connected together
 ![Image](/Images/Circuits.png)
 
-## Explanation of the StateChart
+## Explanation of the StateChart, with Multithreading Tasking
 We proceed to explain the scheduling of activities carried out by Raspberry, analyzing the possible states in which the system can be found.
 The operating cycle of the Raspberry board continues to alternate between two macrostates:
 - "lights off"
@@ -53,7 +53,12 @@ During the time period between 08:00 and 20:00, Raspberry closes the circuit wit
 
 When the lights are on, the two main threads are active. They manage an alternation in measurements between the two sensors, the DHT22 and the Capacitive Soil Moisture Sensor. The two threads also share a lock, which must be acquired to perform a measurement. Therefore, when the "lights on" phase starts, the system enters an idle state, waiting for one of the two threads to acquire the lock. Depending on which thread has the lock, the system proceeds in one of two directions, "DHT22 Reading" or "Capacitive Reading". At the end of these macro operations, the system returns to the central area of the state chart to release the lock and enter a subsequent idle state
 1. "DHT22 Reading" 
-The measurement is taken using the sensor, and then the new measurement is saved in a queue of values. The subsequent decisions are made based on the average of this list. 
+The measurement is taken using the sensor, and then the new measurement is saved in a queue of values. The subsequent decisions are made based on the average of this data structure. 
 - If the average of the air humidity measurements falls within a pre-established minimum and maximum value, then we are in an ideal situation, and we return to the lock release phase. 
 - If, on the other hand, the air humidity average is greater than an acceptable maximum value, the fan is turned on and then off with the aim of reducing the humidity level through air recirculation. 
 - If the average is less than an acceptable minimum value, the humidification pump is turned on to increase the humidity beyond the minimum level allowed
+
+2. "Capacitive Reading"
+Also in this case the measurement is saved in a queue of values, then the subsequent decisions are made based on the average of this data structure
+- If the average soil humidity is greater than an acceptable minimum value, then we return to the lock release phase. 
+- In the opposite case, we are in a situation where the soil moisture is too low, meaning that the plant needs to be irrigated. Therefore, we enter the "Irrigation" state, which turns on and then off the pump dedicated to irrigation. Additionally, the HC-SR04 sensor, located on the tank cap, is activated to monitor the new water level after irrigation. Moreover after each irrigation a counter is increased, and each time this counter is a multiple of a value X, we fertilize the soil.
