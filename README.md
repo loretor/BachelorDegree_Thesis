@@ -62,3 +62,8 @@ The measurement is taken using the sensor, and then the new measurement is saved
 Also in this case the measurement is saved in a queue of values, then the subsequent decisions are made based on the average of this data structure
 - If the average soil humidity is greater than an acceptable minimum value, then we return to the lock release phase. 
 - In the opposite case, we are in a situation where the soil moisture is too low, meaning that the plant needs to be irrigated. Therefore, we enter the "Irrigation" state, which turns on and then off the pump dedicated to irrigation. Additionally, the HC-SR04 sensor, located on the tank cap, is activated to monitor the new water level after irrigation. Moreover after each irrigation a counter is increased, and each time this counter is a multiple of a value X, we fertilize the soil.
+
+## Cloud Infrastructure
+The cloud infrastructure is done using AWS Technologies. In particular we used a bucket s3 to store data and two lambda functions to control the calls to the API Gateway.
+- The Raspberry board processes data that needs to be saved remotely, so an HTTP `POST` call is made to the API Gateway URL + `"/upload"` to achieve this result.
+- The application can retrieve such data with a call to the API Gateway URL + `/download`
