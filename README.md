@@ -67,3 +67,5 @@ Also in this case the measurement is saved in a queue of values, then the subseq
 The cloud infrastructure is done using AWS Technologies. In particular we used a bucket s3 to store data and two lambda functions to control the calls to the API Gateway.
 - The Raspberry board processes data that needs to be saved remotely, so an HTTP `POST` call is made to the API Gateway URL + `"/upload"` to achieve this result.
 - The application can retrieve such data with a call to the API Gateway URL + `/download`
+
+![Image](/Images/Cloud.png)
