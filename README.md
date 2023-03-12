@@ -32,4 +32,5 @@ In particular, the first component is entirely dedicated to the control of envir
 - HC-SR04 sensor to monitor the level of water inside the tank used for irrigation, in order to notify the user when the tank is empty.
 - As actuators: some pumps, a fan, and a LED strip.
 
+Here there is a circuit map of all the electronic devices connected together
 ![Image](/Images/Circuits.png)
