@@ -31,3 +31,5 @@ In particular, the first component is entirely dedicated to the control of envir
 - CAPACITIVE SOIL MOISTURE sensor to measure the humidity of the soil.
 - HC-SR04 sensor to monitor the level of water inside the tank used for irrigation, in order to notify the user when the tank is empty.
 - As actuators: some pumps, a fan, and a LED strip.
+
+![Image](/Images/Circuits.png)
